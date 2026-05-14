@@ -1,5 +1,7 @@
+import algorithms.AStar;
 import algorithms.DFS;
 import algorithms.BFS;
+import algorithms.Dijkstra;
 import metrics.Profiler;
 import metrics.BenchmarkResult;
 import java.util.function.Function;
@@ -38,6 +40,12 @@ public class Main {
                 break;
             case "bfs":
                 algoritmoEscolhido = BFS::executar;
+                break;
+            case "dijkstra":
+                algoritmoEscolhido = Dijkstra::executar;
+                break;
+            case "astar": 
+                algoritmoEscolhido = AStar::executar;
                 break;
             default:
                 System.out.println("Erro: Algoritmo '" + nomeAlgoritmo + "' não reconhecido.");
