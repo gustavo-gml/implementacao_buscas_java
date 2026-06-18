@@ -28,7 +28,7 @@ public class Dijkstra {
 
         //  A Fila de Prioridades (Min-Heap)
         // Ensinamos o Java a comparar sempre o índice [2] do nosso array, que é o Custo.
-        PriorityQueue<int[]> filaPrioridade = new PriorityQueue<>(Comparator.comparingInt(no -> no[2]));
+        PriorityQueue<int[]> filaPrioridade = new PriorityQueue<>(linhas * colunas, Comparator.comparingInt(no -> no[2]));
 
         // Adiciona a entrada com custo zero: {linha, coluna, custo}
         filaPrioridade.add(new int[]{linhaAtual, colunaAtual, 0});

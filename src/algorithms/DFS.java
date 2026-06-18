@@ -1,5 +1,6 @@
 package algorithms;
 
+import java.util.ArrayDeque;
 import java.util.Stack;
 
 public class DFS {
@@ -27,7 +28,8 @@ public class DFS {
         if (linhaAtual == -1) return false; // Não têm entrada
 
         // 2. Inicializar a Pilha (Stack)
-        Stack<int[]> pilha = new Stack<>();
+        ArrayDeque<int[]> pilha = new ArrayDeque<>(linhas * colunas);
+        
         pilha.push(new int[]{linhaAtual, colunaAtual});
         // A própria letra 'E' já impede que a entrada seja revisitada
 

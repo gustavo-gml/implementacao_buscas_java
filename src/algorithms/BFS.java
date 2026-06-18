@@ -28,7 +28,7 @@ public class BFS {
         if (linhaAtual == -1) return false;
 
         // 2. Inicializar a Fila (Queue) com ArrayDeque para máxima performance
-        Queue<int[]> fila = new ArrayDeque<>();
+        Queue<int[]> fila = new ArrayDeque<>(linhas * colunas);
         fila.add(new int[]{linhaAtual, colunaAtual});
 
         // 3. Executar a Busca

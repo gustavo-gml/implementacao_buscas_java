@@ -30,7 +30,7 @@ public class AStar {
         if (linhaInicio == -1 || linhaDestino == -1) return false;
 
         // 2. A Fila de Prioridades: Agora ensina o Java a comparar o índice [3], que é o f(n)
-        PriorityQueue<int[]> filaPrioridade = new PriorityQueue<>(Comparator.comparingInt(no -> no[3]));
+        PriorityQueue<int[]> filaPrioridade = new PriorityQueue<>(linhas * colunas, Comparator.comparingInt(no -> no[3]));
 
         // Calcula a heurística inicial (h) usando Distância de Manhattan
         int hInicial = Math.abs(linhaInicio - linhaDestino) + Math.abs(colunaInicio - colunaDestino);
