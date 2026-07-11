@@ -1,19 +1,15 @@
 package algorithms;
 
-import java.util.ArrayDeque;
-import java.util.Queue;
-
 public class BFS {
 
-    // Ordem natural e direta para FIFO: Cima, Baixo, Esquerda, Direita
     private static final int[][] DIRECOES = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
     public static boolean executar(char[][] mapa) {
         int linhas = mapa.length;
         int colunas = mapa[0].length;
 
-        // 1. Encontrar a Entrada ('E')
         int linhaAtual = -1, colunaAtual = -1;
+        
         buscarEntrada:
         for (int l = 0; l < linhas; l++) {
             for (int c = 0; c < colunas; c++) {
@@ -27,19 +23,23 @@ public class BFS {
 
         if (linhaAtual == -1) return false;
 
-        // 2. Inicializar a Fila (Queue) com ArrayDeque para máxima performance
-        Queue<int[]> fila = new ArrayDeque<>(linhas * colunas);
-        fila.add(new int[]{linhaAtual, colunaAtual});
+        // Pré-alocação bruta (Nenhum objeto criado no loop)
+        int tamanhoMaximo = linhas * colunas;
+        int[] fila = new int[tamanhoMaximo];
+        int inicio = 0;
+        int fim = 0;
 
-        // 3. Executar a Busca
-        while (!fila.isEmpty()) {
-            int[] noAtual = fila.poll(); // poll() tira e retorna o PRIMEIRO da fila
-            int l = noAtual[0];
-            int c = noAtual[1];
+        // Achatamento 2D para 1D
+        fila[fim++] = linhaAtual * colunas + colunaAtual;
 
-            if (mapa[l][c] == 'S') {
-                return true;
-            }
+        while (inicio < fim) {
+            
+            // Tira da fila e desempacota
+            int idAtual = fila[inicio++];
+            int l = idAtual / colunas;
+            int c = idAtual % colunas;
+
+            if (mapa[l][c] == 'S') return true;
 
             for (int[] dir : DIRECOES) {
                 int novaLinha = l + dir[0];
@@ -49,19 +49,16 @@ public class BFS {
                     char celulaVizinha = mapa[novaLinha][novaColuna];
 
                     if (celulaVizinha == '1' || celulaVizinha == 'S') {
-
-                        // Modificação in-place para não criar matriz auxiliar
                         if (celulaVizinha == '1') {
                             mapa[novaLinha][novaColuna] = 'V';
                         }
-
-                        // Agenda o vizinho no FINAL da fila
-                        fila.add(new int[]{novaLinha, novaColuna});
+                        
+                        // Empacota e joga no fim da fila
+                        fila[fim++] = novaLinha * colunas + novaColuna;
                     }
                 }
             }
         }
-
         return false;
     }
 }

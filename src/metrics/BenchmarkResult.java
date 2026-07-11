@@ -2,12 +2,18 @@ package metrics;
 
 public class BenchmarkResult {
     public final boolean encontrouSaida;
-    public final double tempoMilis;
+    public final double mediaMilis;
+    public final double minMilis;
+    public final double maxMilis;
+    public final int iteracoes;
     public final long memoriaBytes;
 
-    public BenchmarkResult(boolean encontrouSaida, double tempoMilis, long memoriaBytes) {
+    public BenchmarkResult(boolean encontrouSaida, double mediaMilis, double minMilis, double maxMilis, int iteracoes, long memoriaBytes) {
         this.encontrouSaida = encontrouSaida;
-        this.tempoMilis = tempoMilis;
+        this.mediaMilis = mediaMilis;
+        this.minMilis = minMilis;
+        this.maxMilis = maxMilis;
+        this.iteracoes = iteracoes;
         this.memoriaBytes = memoriaBytes;
     }
 }

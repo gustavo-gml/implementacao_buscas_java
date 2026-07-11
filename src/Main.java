@@ -10,65 +10,61 @@ import java.util.function.Function;
 public class Main {
     public static void main(String[] args) {
 
-        //TODO:  1. Validação de Segurança -> MELHORAR A MENSAGEM DE ERRO 
-        if (args.length < 2) {
-            System.out.println("Erro: Você precisa informar o algoritmo e o caminho do arquivo.");
-            System.out.println("Uso: java Main <dfs|bfs|dijkstra|astar>");
+        if (args.length < 1) {
+            System.out.println("Uso: java Main mazes/labirinto.txt");
             return;
         }
 
-        String nomeAlgoritmo = args[0].toLowerCase();
-        String caminho = args[1];
-
-
-        // Futuramente, args[1] será o caminho do arquivo .txt
-        // String caminhoArquivo = args.length > 1 ? args[1] : "mapa_padrao.txt";
-
+        String caminho = args[0];
         MazeLoader.Labirinto lab = MazeLoader.carregar(caminho);
 
         if (lab == null || lab.mapa == null) {
-            System.out.println("Erro fatal: Falha ao carregar o labirinto. Verifique o caminho e tente novamente.");
+            System.out.println("Erro fatal: Falha ao carregar o labirinto.");
             return;
         }
 
+        int linhas = lab.linhas;
+        int colunas = lab.colunas;
+        int celulas = linhas * colunas;
+
+        System.out.println("=========================================================================");
+        System.out.printf(" Mapa: %d x %d | Celulas: %d\n", linhas, colunas, celulas);
+        System.out.println("=========================================================================\n");
+
+        String[] nomes = {"DFS", "BFS", "Dijkstra", "A*"};
         
-        char[][] mapaWarmUp = new char[lab.linhas][lab.colunas]; //aquecimento do jvm
-        char[][] mapaOficial = lab.mapa;
+        // Array de Funções para rodar em loop
+        @SuppressWarnings("unchecked")
+        Function<char[][], Boolean>[] algoritmos = new Function[]{
+            (Function<char[][], Boolean>) DFS::executar,
+            (Function<char[][], Boolean>) BFS::executar,
+            (Function<char[][], Boolean>) Dijkstra::executar,
+            (Function<char[][], Boolean>) AStar::executar
+        };
 
-        for (int i = 0; i < lab.linhas; i++) {
-            System.arraycopy(lab.mapa[i], 0, mapaWarmUp[i], 0, lab.colunas);
+        System.out.printf("%-10s | %-10s | %-10s | %-10s | %-10s | %-12s\n", 
+                "Algoritmo", "Media (ms)", "Min (ms)", "Max (ms)", "IPS", "Memoria (B)");
+        System.out.println("-------------------------------------------------------------------------");
+
+        for (int i = 0; i < 4; i++) {
+            
+            // Cria clones virgens fresquinhos para não haver contaminação cruzada
+            char[][] mapaOficial = new char[linhas][colunas];
+            char[][] mapaWarmUp = new char[linhas][colunas];
+
+            for (int l = 0; l < linhas; l++) {
+                System.arraycopy(lab.mapa[l], 0, mapaOficial[l], 0, colunas);
+                System.arraycopy(lab.mapa[l], 0, mapaWarmUp[l], 0, colunas);
+            }
+
+            BenchmarkResult res = Profiler.avaliar(algoritmos[i], mapaOficial, mapaWarmUp);
+
+            double ips = res.mediaMilis > 0 ? 1000.0 / res.mediaMilis : 0.0;
+
+            System.out.printf("%-10s | %-10.4f | %-10.4f | %-10.4f | %-10.2f | %-12d\n", 
+                    nomes[i], res.mediaMilis, res.minMilis, res.maxMilis, ips, res.memoriaBytes);
         }
 
-        // 2. O Roteador de Algoritmos
-        // Usamos a interface Function para guardar a referência do metodo escolhido
-        Function<char[][], Boolean> algoritmoEscolhido;
-
-        switch (nomeAlgoritmo) {
-            case "dfs":
-                algoritmoEscolhido = DFS::executar;
-                break;
-            case "bfs":
-                algoritmoEscolhido = BFS::executar;
-                break;
-            case "dijkstra":
-                algoritmoEscolhido = Dijkstra::executar;
-                break;
-            case "astar":
-                algoritmoEscolhido = AStar::executar;
-                break;
-            default:
-                System.out.println("Erro: Algoritmo '" + nomeAlgoritmo + "' não reconhecido.");
-                return;
-        }
-
-        System.out.println("--- Iniciando Teste: " + nomeAlgoritmo.toUpperCase() + " ---");
-
-        // 3. Execução Padronizada
-        BenchmarkResult resultado = Profiler.avaliar(algoritmoEscolhido, mapaOficial, mapaWarmUp);
-
-        // 4. Saída formatada (Idealmente, no futuro, isso imprimirá em formato CSV)
-        System.out.println(nomeAlgoritmo.toUpperCase() + " -> Encontrou: " + resultado.encontrouSaida +
-                " | Tempo: " + resultado.tempoMilis + " ms" +
-                " | Memória: " + resultado.memoriaBytes + " bytes");
+        System.out.println("=========================================================================");
     }
 }
